@@ -1,0 +1,39 @@
+*{
+    margin: 12px;
+    margin-left: 20px;
+}
+.chat{
+    background-color:rgb(205, 247, 233);
+    padding: 23px;
+    display: inline-block;
+    border-radius: 23px;
+}
+
+.msg{
+    background-color: rgb(50, 211, 149);
+    padding: 4px;
+    border-radius: 8px;
+
+}
+
+.btn-addchat button{
+    border: none;
+    background-color: rgb(50, 211, 149);
+    padding: 14px;
+    border-radius: 8px;
+}
+
+.btn-edit button{
+    border: none;
+    background-color: rgb(51, 144, 108);
+    padding: 10px;
+    border-radius: 4px;
+    
+}
+
+.btn-delete button{
+    border: none;
+    background-color: rgb(51, 144, 108);
+    padding: 10px;
+    border-radius: 4px;
+}
