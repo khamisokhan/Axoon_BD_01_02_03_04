@@ -31,6 +31,12 @@
     
 }
 
+.btn-show button{
+    border: none;
+    background-color: rgb(51, 144, 108);
+    padding: 10px;
+    border-radius: 4px;
+}
 .btn-delete button{
     border: none;
     background-color: rgb(51, 144, 108);
