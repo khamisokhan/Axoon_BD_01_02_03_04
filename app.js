@@ -5,6 +5,11 @@ const path = require("path");
 const methodOverride = require("method-override");
 const mongoose = require("mongoose");
 const ExpressError = require("./ExpressError");
+const session = require("express-session");
+// const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
@@ -22,6 +27,51 @@ main()
 async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/ChatSystem");
 }
+const sessionOptions = {
+  secret: "mysupersecretstring",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    express: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  },
+};
+app.use(session(sessionOptions));
+// app.use(flash());
+
+app.use(passport.initialize());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.get("/signup", (req, res) => {
+  res.render("signup.ejs");
+});
+
+app.post("/signup", async (req, res) => {
+  let { username, email, password } = req.body;
+  const newUser = new User({ email, username });
+  const registeredUser = await User.register(newUser, password);
+  console.log(registeredUser);
+  res.redirect("/login");
+});
+
+app.get("/login", (req, res) => {
+  res.render("login.ejs");
+});
+
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    // failureFlash: true,
+  }),
+  async (req, res) => {
+    res.redirect("/chats");
+  }
+);
 
 // index route
 app.get("/chats", async (req, res) => {
