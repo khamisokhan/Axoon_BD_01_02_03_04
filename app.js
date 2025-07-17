@@ -11,6 +11,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 const { isLoggedIn } = require("./middleware.js");
+const sendWelcomeEmail = require("./emailUtil");
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
@@ -58,11 +59,20 @@ app.get("/signup", (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-  let { username, email, password } = req.body;
-  const newUser = new User({ email, username });
-  const registeredUser = await User.register(newUser, password);
-  console.log(registeredUser);
-  res.redirect("/login");
+  try {
+    let { username, email, password } = req.body;
+    const newUser = new User({ email, username });
+    const registeredUser = await User.register(newUser, password);
+
+    await sendWelcomeEmail(email, username);
+
+    console.log("Registered and email sent:", registeredUser);
+    req.flash("success", "Welcome to ChatSystem! Email sent.");
+    res.redirect("/chats");
+  } catch (err) {
+    req.flash("error", err.message);
+    res.redirect("/signup");
+  }
 });
 
 app.get("/login", (req, res) => {
